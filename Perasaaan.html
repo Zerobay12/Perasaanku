@@ -291,14 +291,56 @@
         .last-slide .closing-message {
             animation: softGlow 2s ease-in-out infinite alternate;
         }
+
+        /* Tombol musik manual */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .music-control:hover {
+            background: rgba(0,0,0,0.9);
+            transform: scale(1.1);
+            border-color: #f43f5e;
+        }
+
+        /* Animasi pulse untuk tombol musik saat lagu tidak play */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); background: rgba(244,63,94,0.8); }
+            100% { transform: scale(1); }
+        }
+
+        .music-control.needs-attention {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
 
     <!-- Audio dari Dropbox - diputar otomatis dan loop -->
-    <audio id="bgAudio" loop autoplay>
+    <audio id="bgAudio" loop>
         <source src="https://dl.dropboxusercontent.com/scl/fi/l7ihfz5u12gf54v0ef6ai/Hindia-everything-u-are.mp3?rlkey=uww5pekj2udplj0lul5m5ygfs&e=1&st=455a3odd&raw=1" type="audio/mpeg">
     </audio>
+
+    <!-- Tombol musik manual -->
+    <div class="music-control needs-attention" id="musicToggle">🎵</div>
 
     <div class="scroll-container" id="main-container">
         
@@ -711,25 +753,88 @@
     </div>
 
     <script>
-        // Musik otomatis dari audio tag
+        // Ambil elemen audio
         const audio = document.getElementById('bgAudio');
+        const musicToggle = document.getElementById('musicToggle');
         
         // Set volume ke 50%
         audio.volume = 0.5;
-
-        // Coba play otomatis
-        audio.play().catch(e => {
-            console.log("Autoplay diblokir browser, mencoba lagi...");
-            // Fallback: coba play setelah user klik di mana saja
-            const startMusic = () => {
-                audio.play().catch(err => console.log("Masih diblokir"));
-                document.body.removeEventListener('click', startMusic);
-                document.body.removeEventListener('touchstart', startMusic);
-            };
-            document.body.addEventListener('click', startMusic);
-            document.body.addEventListener('touchstart', startMusic);
+        audio.loop = true;
+        
+        let isPlaying = false;
+        
+        // Fungsi untuk memulai musik
+        function startMusic() {
+            audio.play().then(() => {
+                console.log("Musik berhasil diputar");
+                isPlaying = true;
+                musicToggle.innerHTML = '🔊';
+                musicToggle.classList.remove('needs-attention');
+                // Hapus event listener setelah berhasil
+                document.removeEventListener('click', startMusic);
+                document.removeEventListener('touchstart', startMusic);
+                document.removeEventListener('scroll', startMusicOnScroll);
+            }).catch(err => {
+                console.log("Play gagal:", err);
+            });
+        }
+        
+        // Fungsi untuk scroll (hanya sekali)
+        let scrollPlayed = false;
+        function startMusicOnScroll() {
+            if (!scrollPlayed && !isPlaying) {
+                audio.play().catch(e => console.log("Scroll play ditunda"));
+                scrollPlayed = true;
+                document.removeEventListener('scroll', startMusicOnScroll);
+            }
+        }
+        
+        // Tombol manual untuk play/pause
+        musicToggle.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                musicToggle.innerHTML = '🔊';
+                musicToggle.classList.remove('needs-attention');
+                isPlaying = true;
+            } else {
+                audio.pause();
+                musicToggle.innerHTML = '🎵';
+                musicToggle.classList.add('needs-attention');
+                isPlaying = false;
+            }
         });
-
+        
+        // Update icon saat musik mulai sendiri
+        audio.addEventListener('play', () => {
+            musicToggle.innerHTML = '🔊';
+            musicToggle.classList.remove('needs-attention');
+            isPlaying = true;
+        });
+        
+        audio.addEventListener('pause', () => {
+            musicToggle.innerHTML = '🎵';
+            musicToggle.classList.add('needs-attention');
+            isPlaying = false;
+        });
+        
+        // Coba autoplay
+        audio.play().catch(e => {
+            console.log("Autoplay diblokir browser. Menunggu interaksi user...");
+            
+            // Pasang listener untuk berbagai interaksi
+            document.addEventListener('click', startMusic);
+            document.addEventListener('touchstart', startMusic);
+            document.addEventListener('scroll', startMusicOnScroll);
+            
+            // Tambahan: scroll hint di slide pertama bisa diklik
+            const scrollHint = document.querySelector('.scroll-hint');
+            if (scrollHint) {
+                scrollHint.style.cursor = 'pointer';
+                scrollHint.addEventListener('click', startMusic);
+            }
+        });
+        
+        // Fungsi createHeart (animasi hati)
         function createHeart() {
             const container = document.getElementById('main-container');
             const heart = document.createElement('div');
@@ -738,12 +843,12 @@
             heart.style.left = Math.random() * 100 + '%';
             heart.style.animationDuration = (Math.random() * 2 + 2) + 's'; 
             container.appendChild(heart);
-
+            
             setTimeout(() => {
                 heart.remove();
             }, 3000);
         }
-
+        
         setInterval(createHeart, 500);
     </script>
 </body>
