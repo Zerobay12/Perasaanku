@@ -49,7 +49,7 @@
         /* GAMBAR DI ATAS (posisi diturunkan, tidak terlalu di atas) */
         .floating-top-left {
             position: absolute;
-            top: 60px;     /* ← diturunkan dari 20px jadi 60px */
+            top: 60px;
             left: 20px;
             pointer-events: none;
             z-index: 1;
@@ -57,7 +57,7 @@
 
         .floating-top-right {
             position: absolute;
-            top: 60px;     /* ← diturunkan dari 20px jadi 60px */
+            top: 60px;
             right: 20px;
             pointer-events: none;
             z-index: 1;
@@ -91,7 +91,7 @@
         }
 
         .floating-mid-left img, .floating-mid-right img {
-            width: 85px;    /* ← diperbesar dari 55px jadi 85px */
+            width: 85px;
             opacity: 0.3;
             filter: drop-shadow(0 0 4px rgba(255,255,255,0.2));
             animation: floatAnim 2.5s ease-in-out infinite;
@@ -164,6 +164,77 @@
             object-fit: cover;
         }
 
+        /* GAYA KHUSUS UNTUK SLIDE TERAKHIR - GAMBAR BESAR DAN BERGERAK */
+        .last-slide .big-image-container {
+            margin-bottom: 25px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 280px;
+            height: 280px;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.3);
+            animation: gentleScale 3s ease-in-out infinite;
+            transition: all 0.3s ease;
+        }
+
+        .last-slide .big-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+            animation: slowZoom 8s ease-in-out infinite alternate;
+        }
+
+        /* Animasi untuk container gambarnya (naik turun + scale lembut) */
+        @keyframes gentleScale {
+            0% {
+                transform: translateY(0px) scale(1);
+                box-shadow: 0 20px 35px rgba(0,0,0,0.4);
+            }
+            50% {
+                transform: translateY(-12px) scale(1.02);
+                box-shadow: 0 30px 45px rgba(0,0,0,0.5);
+            }
+            100% {
+                transform: translateY(0px) scale(1);
+                box-shadow: 0 20px 35px rgba(0,0,0,0.4);
+            }
+        }
+
+        /* Animasi zoom lembut pada gambar di dalam container */
+        @keyframes slowZoom {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Teks terakhir dengan gaya lebih besar dan efek menonjol */
+        .last-slide .closing-message {
+            font-size: 1.15rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4));
+            backdrop-filter: blur(4px);
+            padding: 14px 24px;
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 20px;
+            color: #fbc4c4;
+            border: 1px solid rgba(255,255,255,0.2);
+            letter-spacing: 0.5px;
+            line-height: 1.5;
+        }
+
+        /* Hapus scroll-hint di slide terakhir - tidak tampil */
+        .last-slide .scroll-hint {
+            display: none;
+        }
+
         h1 {
             font-size: 1.6rem;
             font-weight: 700;
@@ -185,34 +256,16 @@
             position: absolute;
             bottom: 70px;
             font-size: 20px;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.6);
             animation: bounce 2s infinite;
             z-index: 2;
+            font-weight: 500;
         }
 
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-10px); }
             60% { transform: translateY(-5px); }
-        }
-
-        .whatsapp-btn {
-            background-color: #25d366;
-            color: white;
-            text-decoration: none;
-            padding: 12px 35px;
-            border-radius: 25px;
-            font-weight: 600;
-            margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-            transition: transform 0.2s;
-            display: inline-block;
-            position: relative;
-            z-index: 3;
-        }
-
-        .whatsapp-btn:active {
-            transform: scale(0.95);
         }
 
         .heart-particle {
@@ -229,12 +282,23 @@
             100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
         }
 
-        .slide:last-child .scroll-hint {
-            display: none;
+        /* Efek tambahan untuk teks terakhir */
+        @keyframes softGlow {
+            0% { text-shadow: 0 0 5px rgba(255,200,200,0.3); }
+            100% { text-shadow: 0 0 15px rgba(255,180,180,0.6); }
+        }
+        
+        .last-slide .closing-message {
+            animation: softGlow 2s ease-in-out infinite alternate;
         }
     </style>
 </head>
 <body>
+
+    <!-- Audio dari Dropbox - diputar otomatis dan loop -->
+    <audio id="bgAudio" loop autoplay>
+        <source src="https://dl.dropboxusercontent.com/scl/fi/at60bsi8fbeudzjmgvcb2/Sampai-Jumpa.mp3?rlkey=c9i1cyd757e8i4tf1vul1i8lz&st=4v5ppab3" type="audio/mpeg">
+    </audio>
 
     <div class="scroll-container" id="main-container">
         
@@ -244,13 +308,12 @@
                 <div class="avatar-container">
                     <img src="https://i.imgur.com/9e4uo2v.jpeg" alt="foto 1">
                 </div>
-                <h1>Halloo melakaani...</h1>
+                <h1>Halloo melaaa...</h1>
                 <p>Jujur, waktu pertama kali aku ketemu kamu, Mel, aku sempat punya bayangan yang berbeda tentang dirimu.
                  
                 Tapi semakin lama aku mengenalmu, pandanganku berubah. Aku jadi tahu kalau kamu orang yang lucu, ceria, tulus sama orang, peka sama perasaan teman-teman kamu, dan menyenangkan untuk diajak ngobrol.</p>
             </div>
             <div class="scroll-hint">↓ (Scroll ke bawah ya)</div>
-            <!-- GANTI_LINK_INI dengan link direct dari postimages.org -->
             <div class="floating-top-left">
                 <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kiri">
             </div>
@@ -397,7 +460,6 @@
                 <div class="avatar-container">
                     <img src="https://i.imgur.com/G3j2KVh.jpeg" alt="foto 7">
                 </div>
-                <h1>Aku di Sini...</h1>
                 <p>Aku sangat mencintaimu, sampai aku lupa bahwa perasaan tidak bisa dipaksakan. Aku lupa bahwa setelah semua yang sudah kamu lalui, terutama rasa lelah dan kecewa dalam urusan percintaan, kamu mungkin membutuhkan waktu untuk memulihkan diri dan menata perasaanmu sendiri.
 
                 Aku sadar bahwa setiap orang memiliki waktunya masing-masing. Aku seharusnya tidak terburu-buru dan tidak memaksakan apa yang aku inginkan hanya karena aku takut kehilanganmu. Untuk itu, aku benar-benar minta maaf.</p>
@@ -423,8 +485,9 @@
                 <div class="avatar-container">
                     <img src="https://i.imgur.com/etYFZOM.jpeg" alt="foto 8">
                 </div>
-                <h1>Aku di Sini...</h1>
-                <p>Aku tidak bisa mengubah apa yang sudah terjadi, tapi aku mengakui kesalahanku dan menyesali semua hal yang telah membuatmu kecewa. Sekali lagi, maaf atas semua kesalahan yang sudah aku lakukan kepadamu.</p>
+                <p>Aku tidak bisa mengubah apa yang sudah terjadi, tapi aku mengakui kesalahanku dan menyesali semua hal yang telah membuatmu kecewa. Sekali lagi, maaf atas semua kesalahan yang sudah aku lakukan kepadamu.
+                    
+                Kalau aku bisa mengulang waktu, ada banyak hal yang ingin aku perbaiki. Aku ingin lebih mendengarkan, lebih memahami, dan lebih menghargai perasaanmu, . Aku ingin menjadi seseorang yang membuatmu merasa nyaman, bukan malah menjadi salah satu alasan yang membuatmu merasa terbebani.</p>
             </div>
             <div class="scroll-hint">↓</div>
             <div class="floating-top-left">
@@ -441,18 +504,196 @@
             </div>
         </div>
 
-        <!-- Slide 9 (Penutup & Tombol WA) -->
+        <!-- Slide 9 -->
         <div class="slide">
             <div class="content-wrapper">
                 <div class="avatar-container">
-                    <img src="https://i.imgur.com/TL16EYR.jpeg" alt="foto 9">
+                    <img src="https://i.imgur.com/ys5uDmm.jpeg" alt="foto 9">
+                </div>
+                <p>Terima kasih karena sudah hadir dan menjadi bagian dari cerita yang pernah aku jalani. Terima kasih untuk semua tawa, cerita, candaan random, dan setiap momen yang pernah kita lewati, sekecil apa pun itu.
+                    
+                Aku tidak tahu bagaimana semuanya akan berjalan ke depannya, tapi yang pasti aku tidak pernah menyesal pernah mengenalmu. Kamu telah memberikan banyak pelajaran berharga dan meninggalkan kesan yang akan selalu aku ingat.</p>
+            </div>
+            <div class="scroll-hint">↓</div>
+            <div class="floating-top-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kiri">
+            </div>
+            <div class="floating-top-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kanan">
+            </div>
+            <div class="floating-mid-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kiri">
+            </div>
+            <div class="floating-mid-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kanan">
+            </div>
+        </div>
+
+        <!-- Slide 10 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <div class="avatar-container">
+                    <img src="https://i.imgur.com/GLvTlC2.jpeg" alt="foto 10">
                 </div>
                 <h1>I Just Wanna Say...</h1>
-                <p>Apapun jalan yang bakal kita lewatin ke depannya, aku harap kamu selalu bahagia dan dilindungi sama hal-hal baik.
+                <p>Aku benar-benar tulus mencintaimu. Saat aku sudah menyukai seseorang, aku tidak akan melirik orang lain, entah itu mendekati, mencari perhatian dari cewek lain dan . Karena ketika perasaanku sudah jatuh pada satu orang, hatiku akan tetap memilih orang itu.
 
-                Kalau kamu udah selesai baca semuanya, kabari aku di WhatsApp ya? 😊❤️</p>
-                <a href="https://wa.me/6281234567890?text=Aku%20udah%20baca%20semuanya%20sampai%20habis%2C%20Mel...%20%E2%9C%A8" class="whatsapp-btn" target="_blank">Kirim Pesan</a>
+                Mau dia secantik apa pun, kalau hatiku sudah menyukai satu orang, aku tidak akan mudah tertarik pada orang lain. Bagiku, kecantikan bukan alasan untuk mengalihkan perasaan yang sudah aku berikan kepada seseorang.</p>
             </div>
+            <div class="scroll-hint">↓</div>
+            <div class="floating-top-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kiri">
+            </div>
+            <div class="floating-top-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kanan">
+            </div>
+            <div class="floating-mid-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kiri">
+            </div>
+            <div class="floating-mid-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kanan">
+            </div>
+        </div>
+
+        <!-- Slide 11 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <div class="avatar-container">
+                    <img src="https://i.imgur.com/ZH5iB9P.jpeg" alt="foto 11">
+                </div>
+                <p>Sering kali aku bertanya pada diriku sendiri, apakah kehadiranku justru mengganggu waktumu, apakah sikapku membuatmu merasa tidak nyaman, dan apakah aku pantas mendapatkan seseorang sebaik dirimu.
+
+                Pertanyaan-pertanyaan itu terus muncul di pikiranku, terutama ketika aku sadar bahwa aku telah melakukan banyak kesalahan. Aku takut tanpa sadar menjadi alasan yang membuatmu merasa lelah, terbebani, atau tidak tenang.</p>
+            </div>
+            <div class="scroll-hint">↓</div>
+            <div class="floating-top-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kiri">
+            </div>
+            <div class="floating-top-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kanan">
+            </div>
+            <div class="floating-mid-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kiri">
+            </div>
+            <div class="floating-mid-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kanan">
+            </div>
+        </div>
+
+        <!-- Slide 12 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <div class="avatar-container">
+                    <img src="https://i.imgur.com/qLTpQjD.jpeg" alt="foto 12">
+                </div>
+                <p>Untuk kebaikanmu, aku akan mencoba melepaskan dan mengikhlaskan perasaanku kepadamu. Bukan karena perasaanku sudah hilang, tetapi karena aku tidak ingin kehadiranku justru menjadi beban atau mengganggu ketenanganmu.
+
+                Aku sadar bahwa aku tidak bisa memaksa kamu untuk tetap bersamaku. Perasaan dan pilihan hati adalah hakmu sepenuhnya, dan aku harus menghormati apa pun keputusan yang kamu ambil.</p>
+            </div>
+            <div class="scroll-hint">↓</div>
+            <div class="floating-top-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kiri">
+            </div>
+            <div class="floating-top-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kanan">
+            </div>
+            <div class="floating-mid-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kiri">
+            </div>
+            <div class="floating-mid-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kanan">
+            </div>
+        </div>
+
+        <!-- Slide 13 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <div class="avatar-container">
+                    <img src="https://i.imgur.com/TvBTMRj.jpeg" alt="foto 13">
+                </div>
+                <p>Meskipun berat, aku ingin belajar untuk mengikhlaskan. Karena pada akhirnya, aku lebih ingin melihatmu bahagia dan merasa tenang daripada memaksakan sesuatu yang hanya akan membuatmu tidak nyaman.
+
+                Dan satu hal yang ingin aku sampaikan, cobalah untuk tidak memikul semuanya sendirian. Kamu tidak harus selalu terlihat kuat di setiap keadaan dan menghadapi semua masalah seorang diri.</p>
+            </div>
+            <div class="scroll-hint">↓</div>
+            <div class="floating-top-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kiri">
+            </div>
+            <div class="floating-top-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kanan">
+            </div>
+            <div class="floating-mid-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kiri">
+            </div>
+            <div class="floating-mid-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kanan">
+            </div>
+        </div>
+
+        <!-- Slide 14 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <div class="avatar-container">
+                    <img src="https://i.imgur.com/9e4uo2v.jpeg" alt="foto 14">
+                </div>
+                <p>Jika suatu saat kamu sedang merasa lelah, sedih, atau memiliki banyak hal yang mengganggu pikiranmu, cobalah untuk bercerita kepada seseorang yang kamu percaya. Bisa kepada temanmu, bisa kepada aku,  bisa kepada sahabatmu, keluargamu, atau siapa pun yang membuatmu merasa nyaman untuk berbagi cerita.
+
+                Tidak apa-apa untuk meminta bantuan, tidak apa-apa untuk bersandar sesekali. Menyimpan semuanya sendirian hanya akan membuat beban itu terasa semakin berat.</p>
+            </div>
+            <div class="scroll-hint">↓</div>
+            <div class="floating-top-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kiri">
+            </div>
+            <div class="floating-top-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kanan">
+            </div>
+            <div class="floating-mid-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kiri">
+            </div>
+            <div class="floating-mid-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kanan">
+            </div>
+        </div>
+
+        <!-- Slide 15 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <div class="avatar-container">
+                    <img src="https://i.imgur.com/XDtrTNv.jpeg" alt="foto 15">
+                </div>
+                <p>Aku berharap suatu hari nanti kamu bisa menemukan seseorang yang mampu membuka kembali hatimu dan membantu menghapus luka serta kenangan buruk yang pernah terjadi di masa lalu.
+
+                Aku berharap kamu dipertemukan dengan seseorang yang benar-benar mencintaimu dengan tulus, seseorang yang selalu menghargai kehadiranmu dan menerima segala kekurangan maupun kelebihan yang kamu miliki.</p>
+            </div>
+            <div class="scroll-hint">↓</div>
+            <div class="floating-top-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kiri">
+            </div>
+            <div class="floating-top-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kanan">
+            </div>
+            <div class="floating-mid-left">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kiri">
+            </div>
+            <div class="floating-mid-right">
+                <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar tengah kanan">
+            </div>
+        </div>
+
+        <!-- SLIDE TERAKHIR - Gambar besar bergerak + pesan bunga -->
+        <div class="slide last-slide">
+            <div class="content-wrapper">
+                <!-- Gambar besar dengan container yang bergerak -->
+                <div class="big-image-container">
+                    <img src="https://i.imgur.com/nxxRLOt.jpeg" alt="bunga mela">
+                </div>
+                <!-- Pesan yang sudah dirapihkan tanpa tanda panah -->
+                <div class="closing-message">
+                    🌸 Bunga ini kuambil dari namamu "Mela"<br>
+                    Kuharap kamu bisa tumbuh secantik bunga ini 🌸
+                </div>
+            </div>
+            <!-- Scroll hint sudah di-hidden melalui CSS -->
             <div class="floating-top-left">
                 <img src="https://i.imgur.com/Vlk9TkT.png" alt="gambar atas kiri">
             </div>
@@ -470,6 +711,25 @@
     </div>
 
     <script>
+        // Musik otomatis dari audio tag
+        const audio = document.getElementById('bgAudio');
+        
+        // Set volume ke 50%
+        audio.volume = 0.5;
+
+        // Coba play otomatis
+        audio.play().catch(e => {
+            console.log("Autoplay diblokir browser, mencoba lagi...");
+            // Fallback: coba play setelah user klik di mana saja
+            const startMusic = () => {
+                audio.play().catch(err => console.log("Masih diblokir"));
+                document.body.removeEventListener('click', startMusic);
+                document.body.removeEventListener('touchstart', startMusic);
+            };
+            document.body.addEventListener('click', startMusic);
+            document.body.addEventListener('touchstart', startMusic);
+        });
+
         function createHeart() {
             const container = document.getElementById('main-container');
             const heart = document.createElement('div');
