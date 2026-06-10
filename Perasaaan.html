@@ -295,8 +295,8 @@
 </head>
 <body>
 
-    <!-- Audio dari Dropbox - diputar otomatis dan loop -->
-    <audio id="bgAudio" loop autoplay>
+    <!-- Audio dari Dropbox - diputar saat scroll -->
+    <audio id="bgAudio" loop>
         <source src="https://dl.dropboxusercontent.com/scl/fi/at60bsi8fbeudzjmgvcb2/Sampai-Jumpa.mp3?rlkey=c9i1cyd757e8i4tf1vul1i8lz&st=4v5ppab3" type="audio/mpeg">
     </audio>
 
@@ -711,25 +711,41 @@
     </div>
 
     <script>
-        // Musik otomatis dari audio tag
+        // ========== MUSIK - PLAY SAAT USER SCROLL/SLIDE KE BAWAH ==========
         const audio = document.getElementById('bgAudio');
-        
-        // Set volume ke 50%
         audio.volume = 0.5;
-
-        // Coba play otomatis
-        audio.play().catch(e => {
-            console.log("Autoplay diblokir browser, mencoba lagi...");
-            // Fallback: coba play setelah user klik di mana saja
-            const startMusic = () => {
-                audio.play().catch(err => console.log("Masih diblokir"));
-                document.body.removeEventListener('click', startMusic);
-                document.body.removeEventListener('touchstart', startMusic);
-            };
-            document.body.addEventListener('click', startMusic);
-            document.body.addEventListener('touchstart', startMusic);
-        });
-
+        
+        let musicStarted = false;
+        
+        function startMusic() {
+            if (!musicStarted) {
+                audio.play().then(() => {
+                    console.log("Musik berhasil diputar saat user scroll");
+                    musicStarted = true;
+                    // Hapus event listener setelah berhasil
+                    window.removeEventListener('scroll', startMusic);
+                    window.removeEventListener('touchmove', startMusic);
+                }).catch(e => {
+                    console.log("Play music failed:", e);
+                });
+            }
+        }
+        
+        // Event untuk scroll (laptop & handphone)
+        window.addEventListener('scroll', startMusic);
+        window.addEventListener('touchmove', startMusic);
+        
+        // Fallback: jika user tap/klik di mana saja (antisipasi)
+        document.body.addEventListener('click', function() {
+            if (!musicStarted) {
+                audio.play().catch(() => {});
+                musicStarted = true;
+                window.removeEventListener('scroll', startMusic);
+                window.removeEventListener('touchmove', startMusic);
+            }
+        }, { once: true });
+        
+        // ========== EFEK HEART ==========
         function createHeart() {
             const container = document.getElementById('main-container');
             const heart = document.createElement('div');
@@ -738,12 +754,12 @@
             heart.style.left = Math.random() * 100 + '%';
             heart.style.animationDuration = (Math.random() * 2 + 2) + 's'; 
             container.appendChild(heart);
-
+            
             setTimeout(() => {
                 heart.remove();
             }, 3000);
         }
-
+        
         setInterval(createHeart, 500);
     </script>
 </body>
